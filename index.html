@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YAMAS • İçerik Portalı</title>
+<meta name="color-scheme" content="light dark">
+<style>
+  :root{
+    --fg:#111; --muted:#6b7280; --border:#e5e7eb; --bg:#fff; --card:#fafafa; --accent:#2563eb;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --fg:#e5e7eb; --muted:#9ca3af; --border:#2b2f36; --bg:#0b0e12; --card:#111418; --accent:#60a5fa; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font:15px system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--fg); background:var(--bg);}
+  header{padding:18px 16px; border-bottom:1px solid var(--border); position:sticky; top:0; backdrop-filter:saturate(180%) blur(8px); background:color-mix(in oklab, var(--bg) 92%, transparent);}
+  .wrap{max-width:1100px; margin:0 auto; padding:0 16px;}
+  nav{display:flex; gap:12px; flex-wrap:wrap;}
+  nav a{display:inline-block; padding:8px 10px; border:1px solid var(--border); border-radius:10px; text-decoration:none; color:var(--fg);}
+  nav a:hover{background:var(--card)}
+  h1{margin:0 0 6px 0; font-size:20px}
+  main{padding:18px 0 48px}
+  .grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr));}
+  .card{border:1px solid var(--border); border-radius:14px; background:var(--card);}
+  .card .hd{padding:12px 14px; border-bottom:1px solid var(--border); font-weight:600;}
+  .card .bd{padding:12px 14px;}
+  .muted{color:var(--muted); font-size:13px}
+  .list{display:grid; gap:8px; margin:0; padding:0; list-style:none;}
+  .list a{display:flex; justify-content:space-between; align-items:center; gap:10px; text-decoration:none; color:var(--fg); padding:10px 12px; border:1px dashed var(--border); border-radius:10px; background:color-mix(in oklab, var(--card) 85%, transparent);}
+  .list a:hover{border-style:solid}
+  /* iframe yardımcıları */
+  .ratio{position:relative; width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--border); background:var(--bg)}
+  .r-30{padding-top:30%} .r-40{padding-top:40%} .r-50{padding-top:50%} .r-60{padding-top:60%}
+  .ratio iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+  .h-fixed iframe{width:100%; height:300px; border:0} /* sabit yükseklik isteyenler için */
+  .pill{display:inline-block; padding:2px 8px; border-radius:999px; background:color-mix(in oklab, var(--accent) 18%, transparent); color:var(--fg); font-size:12px}
+  footer{padding:28px 16px; border-top:1px solid var(--border); color:var(--muted); text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>YAMAS • İçerik Portalı</h1>
+    <nav>
+      <a href="#bulten">?? Aylık Bülten (PDF)</a>
+      <a href="#hava">? Hava Durumu</a>
+      <a href="#takvim">?? Tatiller</a>
+      <a href="#tarihte-bugun">?? Tarihte Bugün</a>
+      <a href="#hafta">#?? Hafta No</a>
+      <a href="#haber">?? Son Dakika</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 1) PDF BÜLTENLER -->
+  <section id="bulten" class="card">
+    <div class="hd">?? Aylık Bülten (PDF)</div>
+    <div class="bd">
+      <p class="muted">PDF dosyalarını <code>/assets/pdfs/</code> klasörüne koyup aşağıdaki listeye link ekleyin.</p>
+      <ul class="list">
+        <!-- ÖRNEKLER: BU SATIRLARI KENDİ DOSYALARINLA GÜNCELLE -->
+        <li><a href="./assets/pdfs/2025-09-bulten.pdf" target="_blank" rel="noopener">
+          2025 • Eylül Bülteni <span class="pill">PDF</span></a></li>
+        <li><a href="./assets/pdfs/2025-08-bulten.pdf" target="_blank" rel="noopener">
+          2025 • Ağustos Bülteni <span class="pill">PDF</span></a></li>
+        <!-- /ÖRNEKLER -->
+      </ul>
+    </div>
+  </section>
+
+  <div class="grid">
+
+    <!-- 2) HAVA DURUMU (weatherwidget.io script'li, GitHub Pages’te çalışır) -->
+    <section id="hava" class="card">
+      <div class="hd">? Hava Durumu</div>
+      <div class="bd">
+        <!-- Şehir satırlarını çoğaltabilirsin -->
+        <a class="weatherwidget-io" href="https://forecast7.com/tr/40d2248d35/bursa/" data-label_1="BURSA" data-label_2="HAVA DURUMU" data-theme="original">BURSA HAVA</a>
+        <a class="weatherwidget-io" href="https://forecast7.com/tr/39d9228d23/ankara/" data-label_1="ANKARA" data-label_2="HAVA DURUMU" data-theme="original">ANKARA HAVA</a>
+      </div>
+    </section>
+
+    <!-- 3) TATİLLER (Google Calendar – Türkiye Tatilleri) -->
+    <section id="takvim" class="card">
+      <div class="hd">?? Türkiye Tatilleri (Google Takvim)</div>
+      <div class="bd">
+        <div class="ratio r-50">
+          <iframe
+            src="https://calendar.google.com/calendar/embed?src=tr.turkish%23holiday%40group.v.calendar.google.com&ctz=Europe/Istanbul&hl=tr&mode=MONTH"
+            loading="lazy"></iframe>
+        </div>
+        <p class="muted">Görünümü değiştirmek için link sonuna <code>&mode=WEEK</code> veya <code>&mode=AGENDA</code> ekleyebilirsin.</p>
+      </div>
+    </section>
+
+    <!-- 4) TARİHTE BUGÜN (Kodyap embed) -->
+    <section id="tarihte-bugun" class="card">
+      <div class="hd">?? Tarihte Bugün</div>
+      <div class="bd">
+        <div class="ratio r-50">
+          <iframe
+            src="https://kodyap.com/kod/tarihtebugun/313033-FFFFFF-FFFFFF-FFFF66_14-1-0-1-1-1_600-19_1-1589375881"
+            loading="lazy" title="Tarihte Bugün"></iframe>
+        </div>
+        <p class="muted">Yükseklik için üstteki URL’de <code>_600-19_</code> kısmındaki sayıyı büyütebilirsin.</p>
+      </div>
+    </section>
+
+    <!-- 5) HAFTA NUMARASI (sadece metin) -->
+    <section id="hafta" class="card">
+      <div class="hd">#?? Bugün Kaçıncı Hafta?</div>
+      <div class="bd">
+        <div id="weekline" style="font-weight:600; font-size:18px;">—</div>
+        <p class="muted">İstanbul saatine göre hesaplanır.</p>
+      </div>
+    </section>
+
+    <!-- 6) SON DAKİKA (RSS.app – istersen kaldır) -->
+    <section id="haber" class="card">
+      <div class="hd">?? Son Dakika</div>
+      <div class="bd">
+        <!-- Sabit yükseklik isteyen bir embed -->
+        <div class="h-fixed" style="border:1px solid var(--border); border-radius:10px; overflow:hidden;">
+          <iframe src="https://rss.app/embed/v1/list/UgyqyH3n5dnKxKan" loading="lazy"></iframe>
+        </div>
+        <p class="muted">RSS kaynağını kendi feed’inle değiştir.</p>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  Bu sayfa GitHub Pages üzerinde barındırılıyor. © <span id="yil"></span> YAMAS
+</footer>
+
+<!-- Weatherwidget.io script (GitHub Pages’te çalışır; Paperwork’te çalışmaz) -->
+<script>
+!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];
+if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';
+fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+</script>
+
+<!-- Hafta numarası ve footer yılı -->
+<script>
+  function getISOWeek(d){
+    const tmp = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const day = tmp.getUTCDay() || 7;
+    tmp.setUTCDate(tmp.getUTCDate() + 4 - day);
+    const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(),0,1));
+    return Math.ceil((((tmp - yearStart) / 86400000) + 1) / 7);
+  }
+  (function(){
+    const tz = 'Europe/Istanbul';
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: tz }));
+    const tarih = now.toLocaleDateString('tr-TR',{weekday:'long', day:'2-digit', month:'long', year:'numeric'});
+    const hafta = getISOWeek(now);
+    const el = document.getElementById('weekline');
+    if(el) el.textContent = `${tarih} – ${hafta}. Hafta`;
+    const yil = document.getElementById('yil'); if(yil) yil.textContent = now.getFullYear();
+  })();
+</script>
+
+</body>
+</html>
