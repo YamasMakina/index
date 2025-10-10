@@ -3,35 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YAMAS • Hava Durumu</title>
+  <title>YAMAS • Hava Durumu Bursa</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      background: #000;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      background: #f5f7fa;
     }
   </style>
 </head>
 
 <body>
-  <!-- WEATHER WIDGET START -->
-  <div id="ww_3c01aff80605c" v="1.3" loc="id"
-       a='{"t":"ticker","lang":"tr","sl_lpl":1,"ids":["wl5738"],
-       "font":"Arial","sl_ics":"one_a","sl_sot":"celsius",
-       "cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF",
-       "cl_persp":"#81D4FA","cl_sun":"#FFC107",
-       "cl_moon":"#FFC107","cl_thund":"#FF5722"}'>
-    Daha fazla hava durumu tahmini:
-    <a href="https://oneweather.org/tr/ankara/15_days/" 
-       id="ww_3c01aff80605c_u" target="_blank"
-       style="color:#81D4FA;">15 Günlük Hava Durumu Ankara</a>
-  </div>
+  <!-- WEATHERWIDGET.IO BURSA -->
+  <a class="weatherwidget-io"
+     href="https://forecast7.com/tr/40d1929d06/bursa/"
+     data-label_1="BURSA"
+     data-label_2="HAVA DURUMU"
+     data-theme="original">
+     BURSA HAVA DURUMU
+  </a>
 
-  <script async src="https://app3.weatherwidget.org/js/?id=ww_3c01aff80605c"></script>
-  <!-- WEATHER WIDGET END -->
+  <script>
+  !function(d,s,id){
+      var js,fjs=d.getElementsByTagName(s)[0];
+      if(!d.getElementById(id)){
+          js=d.createElement(s);
+          js.id=id;
+          js.src='https://weatherwidget.io/js/widget.min.js';
+          fjs.parentNode.insertBefore(js,fjs);
+      }
+  }(document,'script','weatherwidget-io-js');
+  </script>
 </body>
 </html>
