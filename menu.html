@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YAMAS • Günlük Yemek Menüsü</title>
+<style>
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f8f9fa;
+    margin: 0;
+    padding: 40px 10px;
+    color: #222;
+  }
+  .card {
+    max-width: 500px;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    padding: 24px;
+    text-align: left;
+  }
+  h1 {
+    color: #1e3a8a;
+    text-align: center;
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+  }
+  .item {
+    font-size: 1.1rem;
+    margin: 10px 0;
+  }
+  .label {
+    font-weight: bold;
+    color: #1e3a8a;
+  }
+  .calorie {
+    color: #555;
+    font-size: 0.9rem;
+  }
+  .total {
+    margin-top: 16px;
+    font-weight: bold;
+    color: #d32f2f;
+    text-align: right;
+  }
+  .no-data {
+    text-align: center;
+    color: #888;
+    font-size: 1.1rem;
+  }
+</style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>🍽️ Günlük Yemek Menüsü</h1>
+    <div id="menuContent" class="no-data">Menü yükleniyor...</div>
+  </div>
+
+  <script>
+  // Bugünün tarihini Türk formatında al (GG.AA.YYYY)
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('tr-TR').replace(/\//g, '.');
+
+  fetch("menu.json")
+    .then(r => r.json())
+    .then(data => {
+      const todayMenu = data.find(item => item.Tarih === dateStr);
+      const container = document.getElementById("menuContent");
+
+      if (todayMenu) {
+        let totalCal = 0;
+        const html = `
+          <div class="item"><span class="label">🥣 Çorba:</span> ${todayMenu.Çorba} <span class="calorie">(${todayMenu.Çorba_Kcal} kcal)</span></div>
+          <div class="item"><span class="label">🍛 Ana Yemek:</span> ${todayMenu.AnaYemek} <span class="calorie">(${todayMenu.AnaYemek_Kcal} kcal)</span></div>
+          <div class="item"><span class="label">🍚 Yan Yemek:</span> ${todayMenu.YanYemek} <span class="calorie">(${todayMenu.YanYemek_Kcal} kcal)</span></div>
+          <div class="item"><span class="label">🍮 Tatlı / İçecek:</span> ${todayMenu["Tatlıİçecek"]} <span class="calorie">(${todayMenu["Tatlıİçecek_Kcal"]} kcal)</span></div>
+          <div class="total">🔥 Toplam: ${
+            Number(todayMenu.Çorba_Kcal) + 
+            Number(todayMenu.AnaYemek_Kcal) + 
+            Number(todayMenu.YanYemek_Kcal) + 
+            Number(todayMenu["Tatlıİçecek_Kcal"])
+          } kcal</div>
+        `;
+        container.innerHTML = html;
+        container.classList.remove("no-data");
+      } else {
+        container.textContent = `Bugün (${dateStr}) için menü bilgisi bulunamadı.`;
+      }
+    })
+    .catch(() => {
+      document.getElementById("menuContent").textContent = "Menü verisi yüklenemedi.";
+    });
+  </script>
+</body>
+</html>
