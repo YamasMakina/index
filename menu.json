@@ -221,6 +221,39 @@
   },
   {
     "Tarih": "21.10.2025",
+    "Çorba": "MERCİMEK ÇORBA",
+    "Çorba_Kcal": 112,
+    "AnaYemek": "ETLİ TAZE FASULYE",
+    "AnaYemek_Kcal": 166,
+    "YanYemek": "PİRİNÇ PİLAVI",
+    "YanYemek_Kcal": 441,
+    "Tatlıİçecek": "YAŞ PASTA",
+    "Tatlıİçecek_Kcal": 367
+  },
+  {
+    "Tarih": "22.10.2025",
+    "Çorba": "YANKI ÇORBA",
+    "Çorba_Kcal": 220,
+    "AnaYemek": "CİĞER TAVA",
+    "AnaYemek_Kcal": 726,
+    "YanYemek": " BULGUR PİLAVI (BAŞBAŞI)",
+    "YanYemek_Kcal": 108,
+    "Tatlıİçecek": "MEYVE",
+    "Tatlıİçecek_Kcal": 46
+  },
+  {
+    "Tarih": "23.10.2025",
+    "Çorba": "MERCİMEK ÇORBA",
+    "Çorba_Kcal": 112,
+    "AnaYemek": "HÜNKAR BEĞENDİ",
+    "AnaYemek_Kcal": 308,
+    "YanYemek": "PİRİNÇ PİLAVI ",
+    "YanYemek_Kcal": 441,
+    "Tatlıİçecek": " HAVUÇ DİLİMİ BAKLAVA (H)",
+    "Tatlıİçecek_Kcal": 445
+  },
+  {
+    "Tarih": "24.10.2025",
     "Çorba": "TEL.ŞEH.ÇORBA",
     "Çorba_Kcal": 269,
     "AnaYemek": "ETLİ KURU FASULYE",
@@ -229,39 +262,6 @@
     "YanYemek_Kcal": 326,
     "Tatlıİçecek": "SÜT HELVASI",
     "Tatlıİçecek_Kcal": 613
-  },
-  {
-    "Tarih": "22.10.2025",
-    "Çorba": "TEL.ŞEH.ÇORBA",
-    "Çorba_Kcal": 269,
-    "AnaYemek": "KIRKPINAR KÖFTE/ DOMATES SOSLU",
-    "AnaYemek_Kcal": 487,
-    "YanYemek": "TEREYAĞLI ERİŞTE",
-    "YanYemek_Kcal": 337,
-    "Tatlıİçecek": "MEYVE",
-    "Tatlıİçecek_Kcal": 46
-  },
-  {
-    "Tarih": "23.10.2025",
-    "Çorba": "MERCİMEK ÇORBA",
-    "Çorba_Kcal": 112,
-    "AnaYemek": "BALIK IZGARA / FIRIN PATATES",
-    "AnaYemek_Kcal": 551,
-    "YanYemek": "BULGUR PİLAVI",
-    "YanYemek_Kcal": 326,
-    "Tatlıİçecek": "TAHİN HELVA FIRINLANMIŞ",
-    "Tatlıİçecek_Kcal": 336
-  },
-  {
-    "Tarih": "24.10.2025",
-    "Çorba": "NANELİ YOĞ. ÇORBA",
-    "Çorba_Kcal": 200,
-    "AnaYemek": "KIYMALI YEŞİL MERCİMEK",
-    "AnaYemek_Kcal": 280,
-    "YanYemek": "PİRİNÇ PİLAVI",
-    "YanYemek_Kcal": 441,
-    "Tatlıİçecek": "TULUMBA TATLISI",
-    "Tatlıİçecek_Kcal": 202
   },
   {
     "Tarih": "25.10.2025",
