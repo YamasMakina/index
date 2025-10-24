@@ -5,87 +5,86 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>YAMAS • Sosyal Duvar</title>
 <style>
-body {
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  background: #f8f9fa;
-  margin: 0;
-}
-header {
-  background: #1e3a8a;
-  color: #fff;
-  text-align: center;
-  padding: 20px;
-  font-size: 1.6rem;
-  font-weight: bold;
-  letter-spacing: 0.3px;
-}
-.carousel {
-  display: flex;
-  overflow-x: auto;
-  gap: 16px;
-  scroll-behavior: smooth;
-  padding: 20px;
-}
-.card {
-  min-width: 320px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease;
-  flex-shrink: 0;
-}
-.card:hover {
-  transform: scale(1.04);
-}
-.card img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 12px 12px 0 0;
-}
-.card-content {
-  padding: 12px 16px;
-}
-.card-content p {
-  color: #333;
-  font-size: 0.95rem;
-}
-.card-content a {
-  display: inline-block;
-  margin-top: 8px;
-  color: #1e3a8a;
-  text-decoration: none;
-  font-weight: 600;
-}
-.card-content a:hover {
-  text-decoration: underline;
-}
+  body {
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background: #f8f9fa;
+    margin: 0;
+    padding: 20px;
+    color: #222;
+  }
+  h1 {
+    text-align: center;
+    color: #1e3a8a;
+    margin-bottom: 30px;
+  }
+  .carousel {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 12px;
+  }
+  .card {
+    flex: 0 0 280px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    scroll-snap-align: start;
+    padding: 16px;
+    transition: transform .2s;
+  }
+  .card:hover { transform: translateY(-4px); }
+  .card img {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  .card p {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .card small {
+    color: #555;
+    font-size: 12px;
+  }
+  a {
+    color: #1e3a8a;
+    text-decoration: none;
+    font-weight: 600;
+  }
 </style>
 </head>
-<body>
-<header>YAMAS • Sosyal Duvar</header>
 
-<div class="carousel" id="feed"></div>
+<body>
+  <h1>💼 YAMAS • LinkedIn Sosyal Duvar</h1>
+  <div id="feed" class="carousel">Yükleniyor...</div>
 
 <script>
-fetch("social.json")
+fetch("social.json?v=" + Date.now())
   .then(res => res.json())
-  .then(posts => {
-    const container = document.getElementById("feed");
-    posts.forEach(p => {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <img src="${p.image || 'https://yamasmakina.github.io/index/default.jpg'}" alt="">
-        <div class="card-content">
-          <p>${p.text || ''}</p>
-          <a href="${p.link}" target="_blank">Gönderiyi Gör</a>
-        </div>`;
-      container.appendChild(card);
+  .then(data => {
+    const feed = document.getElementById("feed");
+    feed.innerHTML = "";
+    if (!data.length) {
+      feed.textContent = "Gönderi bulunamadı.";
+      return;
+    }
+    data.forEach(post => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `
+        <img src="${post.image}" alt="">
+        <p>${post.text}</p>
+        <small>${post.date}</small><br>
+        <a href="${post.link}" target="_blank">🔗 Gönderiye git</a>
+      `;
+      feed.appendChild(div);
     });
   })
-  .catch(() => {
-    document.getElementById("feed").innerHTML = "<p>Gönderiler yüklenemedi.</p>";
+  .catch(err => {
+    document.getElementById("feed").textContent = "Yüklenirken hata oluştu.";
+    console.error(err);
   });
 </script>
 </body>
