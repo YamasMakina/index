@@ -1,4 +1,4 @@
-import requests, re, json
+import os, requests, re, json
 from bs4 import BeautifulSoup
 
 URL = "https://www.linkedin.com/company/yamas-ya%C5%9Far-makina-ltd-%C5%9Fti-/posts/"
@@ -7,28 +7,65 @@ headers = {
     "Accept-Language": "tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7"
 }
 
-html = requests.get(URL, headers=headers).text
-soup = BeautifulSoup(html, "html.parser")
+print("🔄 LinkedIn gönderileri çekiliyor...")
 
-posts = []
-for tag in soup.find_all("meta"):
-    prop = tag.get("property", "")
-    content = tag.get("content", "")
-    if prop == "og:title" and content.strip():
-        title = content.strip()
-        posts.append({"text": title, "link": URL})
-    elif prop == "og:image" and posts:
-        posts[-1]["image"] = content
+# 💡 Sosyal JSON dizini yoksa oluştur
+os.makedirs("index", exist_ok=True)
 
-# Basit tarih ekleme
-for p in posts:
-    p["date"] = ""
-    if "image" not in p:
-        p["image"] = "https://yamasmakina.github.io/index/default.jpg"
+try:
+    html = requests.get(URL, headers=headers, timeout=20).text
+    soup = BeautifulSoup(html, "html.parser")
+    posts = []
+    current = {}
 
-# İlk 8 gönderiyle sınırla
-posts = posts[:8]
+    for tag in soup.find_all("meta"):
+        prop = tag.get("property", "")
+        content = tag.get("content", "")
+        if not content:
+            continue
 
-# JSON'a yaz
-with open("index/social.json", "w", encoding="utf-8") as f:
-    json.dump(posts, f, ensure_ascii=False, indent=2)
+        # Başlık
+        if prop == "og:title":
+            if current:
+                posts.append(current)
+            current = {"text": content.strip(), "link": URL}
+        # Görsel
+        elif prop == "og:image" and current:
+            img = content.strip()
+            if "media.licdn" in img:
+                img = img.replace("feedshare-shrink_800", "feedshare-shrink_600")  # optimize
+            current["image"] = img
+
+    if current:
+        posts.append(current)
+
+    # Filtrele, sınırla
+    clean_posts = []
+    for p in posts:
+        if not p.get("text"):
+            continue
+        text = re.sub(r"\s+", " ", p["text"]).strip()
+        if len(text) > 180:
+            text = text[:177] + "..."
+        img = p.get("image", "https://yamasmakina.github.io/index/default.jpg")
+        clean_posts.append({
+            "date": "",
+            "text": text,
+            "link": p.get("link", URL),
+            "image": img
+        })
+
+    clean_posts = clean_posts[:5]  # sadece son 5 gönderi
+
+    with open("index/social.json", "w", encoding="utf-8") as f:
+        json.dump(clean_posts, f, ensure_ascii=False, indent=2)
+
+    print(f"✅ {len(clean_posts)} gönderi kaydedildi.")
+except Exception as e:
+    print("⚠️ Hata:", e)
+    os.makedirs("index", exist_ok=True)
+    with open("index/social.json", "w", encoding="utf-8") as f:
+        json.dump(
+            [{"text": f"Veri alınamadı ({e})", "image": "", "link": URL, "date": ""}],
+            f, ensure_ascii=False, indent=2
+        )
