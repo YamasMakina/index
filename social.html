@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YAMAS • Sosyal Duvar</title>
+<style>
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: #f8f9fa;
+  margin: 0;
+}
+header {
+  background: #1e3a8a;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+  font-size: 1.6rem;
+  font-weight: bold;
+  letter-spacing: 0.3px;
+}
+.carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  scroll-behavior: smooth;
+  padding: 20px;
+}
+.card {
+  min-width: 320px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+.card:hover {
+  transform: scale(1.04);
+}
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+}
+.card-content {
+  padding: 12px 16px;
+}
+.card-content p {
+  color: #333;
+  font-size: 0.95rem;
+}
+.card-content a {
+  display: inline-block;
+  margin-top: 8px;
+  color: #1e3a8a;
+  text-decoration: none;
+  font-weight: 600;
+}
+.card-content a:hover {
+  text-decoration: underline;
+}
+</style>
+</head>
+<body>
+<header>YAMAS • Sosyal Duvar</header>
+
+<div class="carousel" id="feed"></div>
+
+<script>
+fetch("social.json")
+  .then(res => res.json())
+  .then(posts => {
+    const container = document.getElementById("feed");
+    posts.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <img src="${p.image || 'https://yamasmakina.github.io/index/default.jpg'}" alt="">
+        <div class="card-content">
+          <p>${p.text || ''}</p>
+          <a href="${p.link}" target="_blank">Gönderiyi Gör</a>
+        </div>`;
+      container.appendChild(card);
+    });
+  })
+  .catch(() => {
+    document.getElementById("feed").innerHTML = "<p>Gönderiler yüklenemedi.</p>";
+  });
+</script>
+</body>
+</html>
