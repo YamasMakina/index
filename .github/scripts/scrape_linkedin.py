@@ -1,6 +1,5 @@
-import json, feedparser, os
+import json, feedparser, os, re
 
-# RSSHub feed URL'in
 RSS_URL = "https://rsshub.app/linkedin/company/yamas-ya%C5%9Far-makina-ltd-%C5%9Fti-/posts"
 os.makedirs("index", exist_ok=True)
 
@@ -9,29 +8,24 @@ print("🌐 RSSHub'tan gönderiler çekiliyor...")
 feed = feedparser.parse(RSS_URL)
 posts = []
 
-for entry in feed.entries[:6]:  # son 6 gönderi
-    title = entry.title
+for entry in feed.entries[:6]:
+    title = entry.title.strip()
     link = entry.link
-    image = ""
-    # Bazı RSSHub feed'lerinde görsel HTML içindedir
-    if "media_content" in entry:
-        image = entry.media_content[0]["url"]
-    elif "summary" in entry:
-        import re
-        m = re.search(r'src="([^"]+)"', entry.summary)
-        if m:
-            image = m.group(1)
+    desc = re.sub(r"<.*?>", "", entry.get("description", ""))  # HTML etiketlerini temizle
+    text = desc or title
+    if len(text) > 300:
+        text = text[:297] + "..."
     posts.append({
         "date": entry.get("published", ""),
-        "text": title,
+        "text": text,
         "link": link,
-        "image": image or "https://yamasmakina.github.io/index/default.jpg"
+        "image": "https://yamasmakina.github.io/index/default.jpg"
     })
 
 if not posts:
     posts.append({
         "date": "",
-        "text": "RSSHub gönderileri çekilemedi.",
+        "text": "Gönderi bulunamadı veya RSSHub'tan veri alınamadı.",
         "link": RSS_URL,
         "image": "https://yamasmakina.github.io/index/default.jpg"
     })
