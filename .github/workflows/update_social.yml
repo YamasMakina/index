@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write   # ✅ GitHub Actions'a push izni verir
+  contents: write
 
 jobs:
   update:
@@ -17,9 +17,10 @@ jobs:
         with:
           python-version: "3.x"
       - name: Install dependencies
-        run: pip install requests beautifulsoup4
-      - name: Run scraper
+        run: |
+          pip install selenium beautifulsoup4 chromedriver-autoinstaller
+      - name: Run LinkedIn scraper (headless)
         run: python .github/scripts/scrape_linkedin.py
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Auto-update LinkedIn social feed"
+          commit_message: "Auto-update LinkedIn social feed (Selenium)"
