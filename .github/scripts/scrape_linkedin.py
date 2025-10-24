@@ -1,36 +1,56 @@
-import json, feedparser, os, re
+import os
+import json
+import re
+import requests
+import xml.etree.ElementTree as ET
 
 RSS_URL = "https://rsshub.app/linkedin/company/yamas-ya%C5%9Far-makina-ltd-%C5%9Fti-/posts"
 os.makedirs("index", exist_ok=True)
 
-print("🌐 RSSHub'tan gönderiler çekiliyor...")
+print("🌐 RSSHub'tan LinkedIn gönderileri alınıyor...")
 
-feed = feedparser.parse(RSS_URL)
-posts = []
+try:
+    r = requests.get(RSS_URL, timeout=20)
+    r.raise_for_status()
+    xml_text = r.text
 
-for entry in feed.entries[:6]:
-    title = entry.title.strip()
-    link = entry.link
-    desc = re.sub(r"<.*?>", "", entry.get("description", ""))  # HTML etiketlerini temizle
-    text = desc or title
-    if len(text) > 300:
-        text = text[:297] + "..."
-    posts.append({
-        "date": entry.get("published", ""),
-        "text": text,
-        "link": link,
-        "image": "https://yamasmakina.github.io/index/default.jpg"
-    })
+    root = ET.fromstring(xml_text)
+    items = root.findall(".//item")
 
-if not posts:
-    posts.append({
-        "date": "",
-        "text": "Gönderi bulunamadı veya RSSHub'tan veri alınamadı.",
-        "link": RSS_URL,
-        "image": "https://yamasmakina.github.io/index/default.jpg"
-    })
+    posts = []
+    for item in items[:6]:
+        title = item.findtext("title", "").strip()
+        desc = re.sub(r"<.*?>", "", item.findtext("description", "").strip())
+        link = item.findtext("link", "").strip()
+        pub = item.findtext("pubDate", "").strip()
+        text = desc or title
+        if len(text) > 350:
+            text = text[:347] + "..."
+        posts.append({
+            "date": pub,
+            "text": text,
+            "link": link,
+            "image": "https://yamasmakina.github.io/index/default.jpg"
+        })
 
-with open("index/social.json", "w", encoding="utf-8") as f:
-    json.dump(posts, f, ensure_ascii=False, indent=2)
+    if not posts:
+        posts.append({
+            "date": "",
+            "text": "RSSHub gönderileri boş döndü.",
+            "link": RSS_URL,
+            "image": "https://yamasmakina.github.io/index/default.jpg"
+        })
 
-print(f"✅ {len(posts)} gönderi kaydedildi.")
+    with open("index/social.json", "w", encoding="utf-8") as f:
+        json.dump(posts, f, ensure_ascii=False, indent=2)
+
+    print(f"✅ {len(posts)} gönderi kaydedildi.")
+except Exception as e:
+    print("⚠️ Hata:", e)
+    with open("index/social.json", "w", encoding="utf-8") as f:
+        json.dump([{
+            "date": "",
+            "text": f"Hata: {e}",
+            "link": RSS_URL,
+            "image": ""
+        }], f, ensure_ascii=False, indent=2)
