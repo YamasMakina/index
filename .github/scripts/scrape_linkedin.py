@@ -1,71 +1,66 @@
-import os, requests, re, json
+import os, time, json, re
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import chromedriver_autoinstaller
 
+# Hedef URL
 URL = "https://www.linkedin.com/company/yamas-ya%C5%9Far-makina-ltd-%C5%9Fti-/posts/"
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-    "Accept-Language": "tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7"
-}
-
-print("🔄 LinkedIn gönderileri çekiliyor...")
-
-# 💡 Sosyal JSON dizini yoksa oluştur
 os.makedirs("index", exist_ok=True)
 
+print("🌐 LinkedIn sayfası yükleniyor...")
+
+# Chrome ayarları
+chromedriver_autoinstaller.install()
+chrome_options = Options()
+chrome_options.add_argument("--headless=new")
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--window-size=1920,1080")
+driver = webdriver.Chrome(options=chrome_options)
+
 try:
-    html = requests.get(URL, headers=headers, timeout=20).text
+    driver.get(URL)
+    time.sleep(8)  # Dinamik içeriklerin yüklenmesi için bekleme süresi
+
+    html = driver.page_source
     soup = BeautifulSoup(html, "html.parser")
+
     posts = []
-    current = {}
+    divs = soup.find_all("div", class_=re.compile("feed-shared-update-v2__description"))
+    images = soup.find_all("img", class_=re.compile("feed-shared-image__image"))
 
-    for tag in soup.find_all("meta"):
-        prop = tag.get("property", "")
-        content = tag.get("content", "")
-        if not content:
-            continue
+    print(f"🧩 {len(divs)} gönderi bulundu.")
 
-        # Başlık
-        if prop == "og:title":
-            if current:
-                posts.append(current)
-            current = {"text": content.strip(), "link": URL}
-        # Görsel
-        elif prop == "og:image" and current:
-            img = content.strip()
-            if "media.licdn" in img:
-                img = img.replace("feedshare-shrink_800", "feedshare-shrink_600")  # optimize
-            current["image"] = img
-
-    if current:
-        posts.append(current)
-
-    # Filtrele, sınırla
-    clean_posts = []
-    for p in posts:
-        if not p.get("text"):
-            continue
-        text = re.sub(r"\s+", " ", p["text"]).strip()
-        if len(text) > 180:
-            text = text[:177] + "..."
-        img = p.get("image", "https://yamasmakina.github.io/index/default.jpg")
-        clean_posts.append({
+    for i, div in enumerate(divs[:5]):  # sadece son 5 gönderi
+        text = div.get_text(strip=True)
+        if len(text) > 220:
+            text = text[:217] + "..."
+        image_url = images[i]["src"] if i < len(images) else "https://yamasmakina.github.io/index/default.jpg"
+        posts.append({
             "date": "",
             "text": text,
-            "link": p.get("link", URL),
-            "image": img
+            "link": URL,
+            "image": image_url
         })
 
-    clean_posts = clean_posts[:5]  # sadece son 5 gönderi
+    if not posts:
+        posts.append({
+            "date": "",
+            "text": "Gönderi bulunamadı veya içerik dinamik olarak yüklenemedi.",
+            "link": URL,
+            "image": "https://yamasmakina.github.io/index/default.jpg"
+        })
 
+    # JSON kaydet
     with open("index/social.json", "w", encoding="utf-8") as f:
-        json.dump(clean_posts, f, ensure_ascii=False, indent=2)
+        json.dump(posts, f, ensure_ascii=False, indent=2)
 
-    print(f"✅ {len(clean_posts)} gönderi kaydedildi.")
+    print(f"✅ {len(posts)} gönderi kaydedildi.")
 except Exception as e:
     print("⚠️ Hata:", e)
-    os.makedirs("index", exist_ok=True)
     with open("index/social.json", "w", encoding="utf-8") as f:
-        json.dump(
-            [{"text": f"Veri alınamadı ({e})", "image": "", "link": URL, "date": ""}],
-            f, ensure_ascii=False, indent=2
-        )
+        json.dump([{"text": f"Hata: {e}", "image": "", "link": URL, "date": ""}], f, ensure_ascii=False, indent=2)
+finally:
+    driver.quit()
