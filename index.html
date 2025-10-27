@@ -3,111 +3,121 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>YAMAS • AR-GE Bülten Arşivi</title>
+<title>💼 YAMAS • LinkedIn Sosyal Duvar</title>
 <style>
   body {
     margin: 0;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    background: #f8f9fa;
+    background: #f9fafc;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     color: #222;
   }
   header {
-    background: #1e3a8a;
-    color: #fff;
     text-align: center;
-    padding: 24px 12px;
-  }
-  header h1 {
-    margin: 0;
-    font-size: 1.8rem;
+    background: #1e3a8a;
+    color: white;
+    padding: 16px 0;
+    font-size: 1.4rem;
+    font-weight: 600;
     letter-spacing: 0.5px;
   }
-  main {
-    max-width: 900px;
-    margin: 40px auto;
-    padding: 0 16px 80px;
-  }
-  h2 {
-    text-align: center;
-    color: #1e3a8a;
-    margin-bottom: 24px;
-  }
-  h3 {
-    color: #333;
-    margin-top: 30px;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  .carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
     gap: 16px;
+    padding: 20px;
+    scrollbar-width: thin;
+  }
+  .carousel::-webkit-scrollbar {
+    height: 6px;
+  }
+  .carousel::-webkit-scrollbar-thumb {
+    background: #1e3a8a;
+    border-radius: 6px;
   }
   .card {
+    flex: 0 0 340px;
     background: #fff;
-    border: 1px solid #ddd;
+    border: 1px solid #e5e7eb;
     border-radius: 10px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.08);
     padding: 14px 16px;
-    text-align: center;
     transition: all 0.2s ease-in-out;
   }
   .card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    border-color: #1e3a8a;
+    box-shadow: 0 3px 10px rgba(30,58,138,0.2);
+    transform: translateY(-2px);
+  }
+  .card p {
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+  .card small {
+    display: block;
+    color: #777;
+    font-size: 0.8rem;
   }
   .card a {
-    text-decoration: none;
+    display: inline-block;
+    margin-top: 8px;
     color: #1e3a8a;
+    text-decoration: none;
     font-weight: 600;
   }
   footer {
     text-align: center;
-    color: #777;
-    font-size: 0.9rem;
-    padding: 24px 12px;
-    border-top: 1px solid #ddd;
+    padding: 10px;
+    color: #888;
+    font-size: 0.85rem;
+  }
+  .linkedin-icon {
+    width: 20px;
+    vertical-align: middle;
+    margin-right: 6px;
+    filter: brightness(0) invert(1);
   }
 </style>
 </head>
 
 <body>
   <header>
-    <h1>YAMAS • AR-GE Bülten Arşivi</h1>
+    <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" class="linkedin-icon">
+    YAMAS • LinkedIn Sosyal Duvar
   </header>
 
-  <main>
-    <h2>📄 Yayınlanmış Bültenler</h2>
+  <div id="carousel" class="carousel">
+    <p style="color:#777;margin:auto;">Yükleniyor...</p>
+  </div>
 
-    <!-- 2023 -->
-    <h3>📘 2023</h3>
-    <div class="grid">
-      <div class="card"><a href="./bulten_01.pdf" target="_blank">Bülten 1. Sayı</a></div>
-      <div class="card"><a href="./bulten_02.pdf" target="_blank">Bülten 2. Sayı</a></div>
-      <div class="card"><a href="./bulten_03.pdf" target="_blank">Bülten 3. Sayı</a></div>
-      <div class="card"><a href="./bulten_04.pdf" target="_blank">Bülten 4. Sayı</a></div>
-    </div>
-
-    <!-- 2024 -->
-    <h3>📗 2024</h3>
-    <div class="grid">
-      <div class="card"><a href="./bulten_05.pdf" target="_blank">Bülten 5. Sayı</a></div>
-      <div class="card"><a href="./bulten_06.pdf" target="_blank">Bülten 6. Sayı</a></div>
-      <div class="card"><a href="./bulten_07.pdf" target="_blank">Bülten 7. Sayı</a></div>
-      <div class="card"><a href="./bulten_08.pdf" target="_blank">Bülten 8. Sayı</a></div>
-    </div>
-
-    <!-- 2025 -->
-    <h3>📙 2025</h3>
-    <div class="grid">
-      <div class="card"><a href="./bulten_09.pdf" target="_blank">Bülten 9. Sayı</a></div>
-      <div class="card"><a href="./bulten_10.pdf" target="_blank">Bülten 10. Sayı</a></div>
-    </div>
-  </main>
-
-  <footer>
-    © <span id="yil"></span> YAMAS • AR-GE Departmanı
-  </footer>
+  <footer>© <span id="year"></span> YAMAS • AR-GE Departmanı</footer>
 
   <script>
-    document.getElementById("yil").textContent = new Date().getFullYear();
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    fetch("https://raw.githubusercontent.com/YamasMakina/index/main/index/social.json?v=" + Date.now())
+      .then(r => r.json())
+      .then(data => {
+        const container = document.getElementById("carousel");
+        if (!data || !data.length) {
+          container.innerHTML = "<p style='color:#999;margin:auto;'>Gönderi bulunamadı :(</p>";
+          return;
+        }
+        container.innerHTML = data.map(post => `
+          <div class="card">
+            <p>${post.text}</p>
+            <small>${new Date(post.date).toLocaleDateString("tr-TR")}</small>
+            <a href="${post.link}" target="_blank">Gönderiyi Gör</a>
+          </div>
+        `).join('');
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById("carousel").innerHTML =
+          "<p style='color:#999;margin:auto;'>Bağlantı hatası :(</p>";
+      });
   </script>
 </body>
 </html>
