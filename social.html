@@ -3,89 +3,121 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>YAMAS • Sosyal Duvar</title>
+<title>💼 YAMAS • LinkedIn Sosyal Duvar</title>
 <style>
   body {
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    background: #f8f9fa;
     margin: 0;
-    padding: 20px;
+    background: #f9fafc;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     color: #222;
   }
-  h1 {
+  header {
     text-align: center;
-    color: #1e3a8a;
-    margin-bottom: 30px;
+    background: #1e3a8a;
+    color: white;
+    padding: 20px 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
   }
-  .carousel {
-    display: flex;
-    overflow-x: auto;
-    gap: 20px;
-    scroll-snap-type: x mandatory;
-    padding-bottom: 12px;
+  main {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 0 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    gap: 18px;
   }
   .card {
-    flex: 0 0 280px;
     background: #fff;
     border-radius: 12px;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    scroll-snap-align: start;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     padding: 16px;
-    transition: transform .2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease-in-out;
   }
-  .card:hover { transform: translateY(-4px); }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+  }
   .card img {
     width: 100%;
-    border-radius: 8px;
+    border-radius: 10px;
     margin-bottom: 10px;
+    object-fit: cover;
+    max-height: 220px;
   }
   .card p {
-    font-size: 14px;
-    line-height: 1.4;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #333;
   }
   .card small {
-    color: #555;
-    font-size: 12px;
+    color: #666;
+    font-size: 0.8rem;
+    margin-top: 8px;
   }
-  a {
+  .card a {
+    display: inline-block;
+    margin-top: 10px;
     color: #1e3a8a;
     text-decoration: none;
     font-weight: 600;
+  }
+  footer {
+    text-align: center;
+    padding: 20px;
+    color: #777;
+    font-size: 0.9rem;
+  }
+  .linkedin-icon {
+    width: 22px;
+    vertical-align: middle;
+    margin-right: 6px;
+    filter: brightness(0) invert(1);
   }
 </style>
 </head>
 
 <body>
-  <h1>💼 YAMAS • LinkedIn Sosyal Duvar</h1>
-  <div id="feed" class="carousel">Yükleniyor...</div>
+  <header>
+    <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" class="linkedin-icon">
+    YAMAS • LinkedIn Sosyal Duvar
+  </header>
 
-<script>
-fetch("https://raw.githubusercontent.com/YamasMakina/index/main/index/social.json?v=" + Date.now())
-  .then(res => res.json())
-  .then(data => {
-    const feed = document.getElementById("feed");
-    feed.innerHTML = "";
-    if (!data.length) {
-      feed.textContent = "Gönderi bulunamadı.";
-      return;
-    }
-    data.forEach(post => {
-      const div = document.createElement("div");
-      div.className = "card";
-      div.innerHTML = `
-        <img src="${post.image}" alt="">
-        <p>${post.text}</p>
-        <small>${post.date}</small><br>
-        <a href="${post.link}" target="_blank">🔗 Gönderiye git</a>
-      `;
-      feed.appendChild(div);
-    });
-  })
-  .catch(err => {
-    document.getElementById("feed").textContent = "Yüklenirken hata oluştu.";
-    console.error(err);
-  });
-</script>
+  <main id="feed">
+    <p style="grid-column:1/-1;text-align:center;color:#777;">Yükleniyor...</p>
+  </main>
+
+  <footer>© <span id="year"></span> YAMAS • AR-GE Departmanı</footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    fetch("https://raw.githubusercontent.com/YamasMakina/index/main/index/social.json?v=" + Date.now())
+      .then(r => r.json())
+      .then(data => {
+        const feed = document.getElementById("feed");
+        if (!data || !data.length) {
+          feed.innerHTML = "<p style='grid-column:1/-1;text-align:center;color:#999;'>Gönderi bulunamadı :(</p>";
+          return;
+        }
+        feed.innerHTML = data.map(post => `
+          <div class="card">
+            <img src="${post.image || 'https://yamasmakina.github.io/index/default.jpg'}" alt="Gönderi Görseli">
+            <p>${post.text}</p>
+            <small>${new Date(post.date).toLocaleDateString("tr-TR")}</small>
+            <a href="${post.link}" target="_blank">Gönderiyi Gör</a>
+          </div>
+        `).join('');
+      })
+      .catch(err => {
+        document.getElementById("feed").innerHTML =
+          "<p style='grid-column:1/-1;text-align:center;color:#999;'>Bağlantı hatası :(</p>";
+        console.error(err);
+      });
+  </script>
 </body>
 </html>
