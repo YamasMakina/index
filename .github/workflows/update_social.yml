@@ -17,7 +17,8 @@ jobs:
         with:
           python-version: "3.x"
       - name: Install dependencies
-        run: pip install feedparser
+        run: |
+          pip install requests feedparser
       - name: Run RSSHub scraper
         run: python .github/scripts/scrape_linkedin.py
       - uses: stefanzweifel/git-auto-commit-action@v5
