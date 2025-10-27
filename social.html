@@ -15,65 +15,66 @@
     text-align: center;
     background: #1e3a8a;
     color: white;
-    padding: 20px 0;
-    font-size: 1.5rem;
+    padding: 16px 0;
+    font-size: 1.4rem;
     font-weight: 600;
     letter-spacing: 0.5px;
   }
-  main {
-    max-width: 1100px;
-    margin: 20px auto;
-    padding: 0 16px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
-    gap: 18px;
+  .carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 16px;
+    padding: 20px;
+    scrollbar-width: thin;
+  }
+  .carousel::-webkit-scrollbar {
+    height: 6px;
+  }
+  .carousel::-webkit-scrollbar-thumb {
+    background: #1e3a8a;
+    border-radius: 6px;
   }
   .card {
+    flex: 0 0 340px;
     background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+    padding: 14px 16px;
     transition: all 0.2s ease-in-out;
   }
   .card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
-  }
-  .card img {
-    width: 100%;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    object-fit: cover;
-    max-height: 220px;
+    border-color: #1e3a8a;
+    box-shadow: 0 3px 10px rgba(30,58,138,0.2);
+    transform: translateY(-2px);
   }
   .card p {
     font-size: 0.95rem;
-    line-height: 1.5;
     color: #333;
+    line-height: 1.4;
+    margin-bottom: 8px;
   }
   .card small {
-    color: #666;
+    display: block;
+    color: #777;
     font-size: 0.8rem;
-    margin-top: 8px;
   }
   .card a {
     display: inline-block;
-    margin-top: 10px;
+    margin-top: 8px;
     color: #1e3a8a;
     text-decoration: none;
     font-weight: 600;
   }
   footer {
     text-align: center;
-    padding: 20px;
-    color: #777;
-    font-size: 0.9rem;
+    padding: 10px;
+    color: #888;
+    font-size: 0.85rem;
   }
   .linkedin-icon {
-    width: 22px;
+    width: 20px;
     vertical-align: middle;
     margin-right: 6px;
     filter: brightness(0) invert(1);
@@ -87,9 +88,9 @@
     YAMAS • LinkedIn Sosyal Duvar
   </header>
 
-  <main id="feed">
-    <p style="grid-column:1/-1;text-align:center;color:#777;">Yükleniyor...</p>
-  </main>
+  <div id="carousel" class="carousel">
+    <p style="color:#777;margin:auto;">Yükleniyor...</p>
+  </div>
 
   <footer>© <span id="year"></span> YAMAS • AR-GE Departmanı</footer>
 
@@ -99,14 +100,13 @@
     fetch("https://raw.githubusercontent.com/YamasMakina/index/main/index/social.json?v=" + Date.now())
       .then(r => r.json())
       .then(data => {
-        const feed = document.getElementById("feed");
+        const container = document.getElementById("carousel");
         if (!data || !data.length) {
-          feed.innerHTML = "<p style='grid-column:1/-1;text-align:center;color:#999;'>Gönderi bulunamadı :(</p>";
+          container.innerHTML = "<p style='color:#999;margin:auto;'>Gönderi bulunamadı :(</p>";
           return;
         }
-        feed.innerHTML = data.map(post => `
+        container.innerHTML = data.map(post => `
           <div class="card">
-            <img src="${post.image || 'https://yamasmakina.github.io/index/default.jpg'}" alt="Gönderi Görseli">
             <p>${post.text}</p>
             <small>${new Date(post.date).toLocaleDateString("tr-TR")}</small>
             <a href="${post.link}" target="_blank">Gönderiyi Gör</a>
@@ -114,9 +114,9 @@
         `).join('');
       })
       .catch(err => {
-        document.getElementById("feed").innerHTML =
-          "<p style='grid-column:1/-1;text-align:center;color:#999;'>Bağlantı hatası :(</p>";
         console.error(err);
+        document.getElementById("carousel").innerHTML =
+          "<p style='color:#999;margin:auto;'>Bağlantı hatası :(</p>";
       });
   </script>
 </body>
