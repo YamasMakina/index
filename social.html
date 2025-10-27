@@ -1,123 +1,110 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>💼 YAMAS • LinkedIn Sosyal Duvar</title>
 <style>
-  body {
-    margin: 0;
-    background: #f9fafc;
-    font-family: 'Segoe UI', Roboto, sans-serif;
-    color: #222;
-  }
-  header {
-    text-align: center;
-    background: #1e3a8a;
-    color: white;
-    padding: 16px 0;
-    font-size: 1.4rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+  :root { --yamas:#1e3a8a; }
+  body { margin:0; background:#f9fafc; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:#222; }
+  header { text-align:center; background:var(--yamas); color:#fff; padding:14px 8px; font-weight:600; letter-spacing:.3px; }
+  .wrap { max-width:1100px; margin:14px auto 8px; padding:0 12px; }
+  .rail {
+    position:relative; display:flex; align-items:center; gap:10px;
   }
   .carousel {
-    display: flex;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    gap: 16px;
-    padding: 20px;
-    scrollbar-width: thin;
+    flex:1; display:flex; gap:14px; overflow-x:auto; scroll-behavior:smooth; padding:12px; 
+    scrollbar-width:thin; background:#fff; border:1px solid #e5e7eb; border-radius:10px;
   }
-  .carousel::-webkit-scrollbar {
-    height: 6px;
-  }
-  .carousel::-webkit-scrollbar-thumb {
-    background: #1e3a8a;
-    border-radius: 6px;
-  }
+  .carousel::-webkit-scrollbar { height:6px; }
+  .carousel::-webkit-scrollbar-thumb { background:var(--yamas); border-radius:6px; }
   .card {
-    flex: 0 0 340px;
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.08);
-    padding: 14px 16px;
-    transition: all 0.2s ease-in-out;
+    flex:0 0 340px; background:#fff; border:1px solid #e5e7eb; border-radius:10px;
+    box-shadow:0 1px 5px rgba(0,0,0,.08); padding:12px 14px; transition:.2s; 
   }
-  .card:hover {
-    border-color: #1e3a8a;
-    box-shadow: 0 3px 10px rgba(30,58,138,0.2);
-    transform: translateY(-2px);
+  .card:hover { border-color:var(--yamas); box-shadow:0 3px 10px rgba(30,58,138,.2); transform:translateY(-2px); }
+  .card p { font-size:.95rem; color:#333; line-height:1.4; margin:0 0 8px; }
+  .card small { display:block; color:#777; font-size:.8rem; }
+  .card a { display:inline-block; margin-top:8px; color:var(--yamas); font-weight:600; text-decoration:none; }
+  .btn {
+    flex:0 0 auto; width:40px; height:40px; border-radius:10px; border:1px solid #e5e7eb; background:#fff;
+    display:grid; place-items:center; cursor:pointer; transition:.15s; user-select:none;
   }
-  .card p {
-    font-size: 0.95rem;
-    color: #333;
-    line-height: 1.4;
-    margin-bottom: 8px;
-  }
-  .card small {
-    display: block;
-    color: #777;
-    font-size: 0.8rem;
-  }
-  .card a {
-    display: inline-block;
-    margin-top: 8px;
-    color: #1e3a8a;
-    text-decoration: none;
-    font-weight: 600;
-  }
-  footer {
-    text-align: center;
-    padding: 10px;
-    color: #888;
-    font-size: 0.85rem;
-  }
-  .linkedin-icon {
-    width: 20px;
-    vertical-align: middle;
-    margin-right: 6px;
-    filter: brightness(0) invert(1);
-  }
+  .btn:hover { border-color:var(--yamas); box-shadow:0 2px 8px rgba(30,58,138,.15); }
+  .btn:active { transform:scale(.98); }
+  footer { text-align:center; padding:10px; color:#888; font-size:.85rem; }
 </style>
 </head>
-
 <body>
-  <header>
-    <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" class="linkedin-icon">
-    YAMAS • LinkedIn Sosyal Duvar
-  </header>
+  <header>YAMAS • LinkedIn Sosyal Duvar</header>
 
-  <div id="carousel" class="carousel">
-    <p style="color:#777;margin:auto;">Yükleniyor...</p>
+  <div class="wrap">
+    <div class="rail">
+      <button class="btn" id="prev" aria-label="Geri">‹</button>
+      <div id="carousel" class="carousel">
+        <p style="color:#777;margin:auto;">Yükleniyor...</p>
+      </div>
+      <button class="btn" id="next" aria-label="İleri">›</button>
+    </div>
   </div>
 
-  <footer>© <span id="year"></span> YAMAS • AR-GE Departmanı</footer>
+  <footer>© <span id="yil"></span> YAMAS • AR-GE</footer>
 
   <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+    document.getElementById("yil").textContent = new Date().getFullYear();
 
-    fetch("https://raw.githubusercontent.com/YamasMakina/index/main/index/social.json?v=" + Date.now())
-      .then(r => r.json())
-      .then(data => {
-        const container = document.getElementById("carousel");
-        if (!data || !data.length) {
-          container.innerHTML = "<p style='color:#999;margin:auto;'>Gönderi bulunamadı :(</p>";
-          return;
+    // JSON'u her zaman en güncelinden çek (raw) + cache-bypass
+    const JSON_URL = "https://raw.githubusercontent.com/YamasMakina/index/main/index/social.json?v=" + Date.now();
+
+    // Bölgesel LinkedIn alan adlarını normalize et → doğrudan gönderi açılsın
+    function normalizeLink(url) {
+      try {
+        const u = new URL(url);
+        if (u.hostname.endsWith("linkedin.com")) {
+          u.hostname = "www.linkedin.com"; // tr.linkedin.com → www.linkedin.com
         }
-        container.innerHTML = data.map(post => `
+        return u.toString();
+      } catch { return url; }
+    }
+
+    function render(posts){
+      const car = document.getElementById("carousel");
+      if (!posts || !posts.length) {
+        car.innerHTML = "<p style='color:#999;margin:auto;'>Gönderi bulunamadı :(</p>";
+        return;
+      }
+      car.innerHTML = posts.map(p => {
+        const dateTxt = p.date ? new Date(p.date).toLocaleDateString("tr-TR") : "";
+        const link = normalizeLink(p.link || "#");
+        return `
           <div class="card">
-            <p>${post.text}</p>
-            <small>${new Date(post.date).toLocaleDateString("tr-TR")}</small>
-            <a href="${post.link}" target="_blank">Gönderiyi Gör</a>
-          </div>
-        `).join('');
-      })
-      .catch(err => {
-        console.error(err);
-        document.getElementById("carousel").innerHTML =
-          "<p style='color:#999;margin:auto;'>Bağlantı hatası :(</p>";
+            <p>${p.text || ""}</p>
+            <small>${dateTxt}</small>
+            <a href="${link}" target="_blank" rel="noopener noreferrer">Gönderiyi Gör</a>
+          </div>`;
+      }).join("");
+
+      // Ok tuşları
+      const step = 360; // her tıklamada kaydırma pikseli
+      document.getElementById("prev").onclick = () => car.scrollBy({left: -step, behavior: "smooth"});
+      document.getElementById("next").onclick = () => car.scrollBy({left:  step, behavior: "smooth"});
+
+      // Klavye yön tuşlarıyla kontrol
+      window.addEventListener("keydown", (e)=>{
+        if (e.key === "ArrowLeft") car.scrollBy({left: -step, behavior:"smooth"});
+        if (e.key === "ArrowRight") car.scrollBy({left:  step, behavior:"smooth"});
       });
+
+      // Otomatik yavaş kaydırma (istersen kapatabilirsin)
+      let auto = setInterval(()=> car.scrollBy({left: step, behavior:"smooth"}), 5000);
+      car.addEventListener("mouseenter", ()=> clearInterval(auto));
+      car.addEventListener("mouseleave", ()=> auto = setInterval(()=> car.scrollBy({left: step, behavior:"smooth"}), 5000));
+    }
+
+    fetch(JSON_URL).then(r=>r.json()).then(render).catch(()=>{
+      document.getElementById("carousel").innerHTML =
+        "<p style='color:#999;margin:auto;'>Bağlantı hatası :(</p>";
+    });
   </script>
 </body>
 </html>
