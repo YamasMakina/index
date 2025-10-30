@@ -50,61 +50,78 @@
 
   <footer>© <span id="yil"></span> YAMAS • IT</footer>
 
-  <script>
-    document.getElementById("yil").textContent = new Date().getFullYear();
+<script>
+(async function() {
+  const container = document.getElementById("socialContainer");
+  const errorBox = document.createElement("div");
+  errorBox.style.cssText = `
+    padding:20px;
+    text-align:center;
+    color:#444;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:8px;
+    margin:20px auto;
+    max-width:600px;
+  `;
 
-    // JSON'u her zaman en güncelinden çek (raw) + cache-bypass
-    const JSON_URL = "https://raw.githubusercontent.com/YamasMakina/index/main/index/social.json?v=" + Date.now();
+  function showError(msg) {
+    errorBox.innerHTML = `<strong>⚠️ ${msg}</strong>`;
+    container.innerHTML = "";
+    container.appendChild(errorBox);
+  }
 
-    // Bölgesel LinkedIn alan adlarını normalize et → doğrudan gönderi açılsın
-    function normalizeLink(url) {
-      try {
-        const u = new URL(url);
-        if (u.hostname.endsWith("linkedin.com")) {
-          u.hostname = "www.linkedin.com"; // tr.linkedin.com → www.linkedin.com
-        }
-        return u.toString();
-      } catch { return url; }
-    }
+  try {
+    const rssUrl = "https://rsshub.app/linkedin/company/yamas-ya%C5%9Far-makina-ltd-%C5%9Fti-/posts";
+    const response = await fetch(rssUrl);
+    if (!response.ok) throw new Error("Sunucu şu anda yanıt vermiyor (503)");
 
-    function render(posts){
-      const car = document.getElementById("carousel");
-      if (!posts || !posts.length) {
-        car.innerHTML = "<p style='color:#999;margin:auto;'>Gönderi bulunamadı :(</p>";
-        return;
-      }
-      car.innerHTML = posts.map(p => {
-        const dateTxt = p.date ? new Date(p.date).toLocaleDateString("tr-TR") : "";
-        const link = normalizeLink(p.link || "#");
-        return `
-          <div class="card">
-            <p>${p.text || ""}</p>
-            <small>${dateTxt}</small>
-            <a href="${link}" target="_blank" rel="noopener noreferrer">Gönderiyi Gör</a>
-          </div>`;
-      }).join("");
+    const text = await response.text();
 
-      // Ok tuşları
-      const step = 360; // her tıklamada kaydırma pikseli
-      document.getElementById("prev").onclick = () => car.scrollBy({left: -step, behavior: "smooth"});
-      document.getElementById("next").onclick = () => car.scrollBy({left:  step, behavior: "smooth"});
+    // RSS XML’ini DOMParser ile çözümle
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(text, "text/xml");
+    const items = xml.querySelectorAll("item");
+    if (!items.length) throw new Error("Hiç gönderi bulunamadı.");
 
-      // Klavye yön tuşlarıyla kontrol
-      window.addEventListener("keydown", (e)=>{
-        if (e.key === "ArrowLeft") car.scrollBy({left: -step, behavior:"smooth"});
-        if (e.key === "ArrowRight") car.scrollBy({left:  step, behavior:"smooth"});
-      });
+    container.innerHTML = "";
 
-      // Otomatik yavaş kaydırma (istersen kapatabilirsin)
-      let auto = setInterval(()=> car.scrollBy({left: step, behavior:"smooth"}), 5000);
-      car.addEventListener("mouseenter", ()=> clearInterval(auto));
-      car.addEventListener("mouseleave", ()=> auto = setInterval(()=> car.scrollBy({left: step, behavior:"smooth"}), 5000));
-    }
+    items.forEach((item, i) => {
+      if (i >= 10) return; // sadece son 10 gönderiyi göster
+      const title = item.querySelector("title")?.textContent || "Gönderi";
+      const link = item.querySelector("link")?.textContent || "#";
+      const desc = item.querySelector("description")?.textContent || "";
 
-    fetch(JSON_URL).then(r=>r.json()).then(render).catch(()=>{
-      document.getElementById("carousel").innerHTML =
-        "<p style='color:#999;margin:auto;'>Bağlantı hatası :(</p>";
+      const card = document.createElement("div");
+      card.className = "postCard";
+      card.style.cssText = `
+        border:1px solid #ddd;
+        border-radius:10px;
+        background:#fff;
+        padding:14px;
+        margin:10px;
+        flex:0 0 300px;
+        box-shadow:0 2px 6px rgba(0,0,0,0.05);
+        transition:transform 0.2s;
+      `;
+      card.onmouseover = () => (card.style.transform = "translateY(-4px)");
+      card.onmouseout = () => (card.style.transform = "translateY(0)");
+
+      card.innerHTML = `
+        <div style="font-weight:600;color:#1e3a8a;margin-bottom:8px;">${title}</div>
+        <div style="font-size:14px;color:#333;line-height:1.35;max-height:120px;overflow:hidden;">${desc}</div>
+        <a href="${link}" target="_blank" style="display:inline-block;margin-top:10px;font-size:13px;color:#2563eb;text-decoration:none;">
+          🔗 Gönderiyi Gör
+        </a>
+      `;
+      container.appendChild(card);
     });
-  </script>
+  } catch (err) {
+    console.error("LinkedIn RSS hatası:", err);
+    showError("LinkedIn bağlantısı şu anda geçici olarak yanıt vermiyor.<br>Lütfen birkaç dakika sonra tekrar deneyin 💫");
+  }
+})();
+</script>
 </body>
 </html>
