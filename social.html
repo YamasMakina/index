@@ -86,31 +86,28 @@ window.addEventListener("DOMContentLoaded", async function() {
     `;
 
     posts.slice(0, 10).forEach((p) => {
-  const title = p.title || p.summary || "Başlıksız Gönderi";
-  const desc = p.description || p.content || "";
-  const link = p.link || p.url || "#";
+      const title = p.title || p.summary || "Başlıksız Gönderi";
+      const desc = p.description || p.content || "";
+      const link = p.link || p.url || "#";
 
-  const card = document.createElement("div");
-  card.className = "postCard";
-  card.style.cssText = `
-    flex:0 0 280px;scroll-snap-align:start;
-    border:1px solid #ddd;border-radius:10px;
-    background:#fff;padding:14px;
-    box-shadow:0 2px 6px rgba(0,0,0,0.05);
-  `;
-  card.innerHTML = `
-    <div style="font-weight:600;color:#1e3a8a;margin-bottom:8px;">${title}</div>
-    <div style="font-size:14px;color:#333;line-height:1.35;max-height:120px;overflow:hidden;">
-      ${desc}
-    </div>
-    <a href="${link}" target="_blank"
-       style="display:inline-block;margin-top:10px;font-size:13px;color:#2563eb;text-decoration:none;">
-      🔗 Gönderiyi Gör
-    </a>
-  `;
-  wrapper.appendChild(card);
-});
-
+      const card = document.createElement("div");
+      card.className = "postCard";
+      card.style.cssText = `
+        flex:0 0 280px;scroll-snap-align:start;
+        border:1px solid #ddd;border-radius:10px;
+        background:#fff;padding:14px;
+        box-shadow:0 2px 6px rgba(0,0,0,0.05);
+      `;
+      card.innerHTML = `
+        <div style="font-weight:600;color:#1e3a8a;margin-bottom:8px;">${title}</div>
+        <div style="font-size:14px;color:#333;line-height:1.35;max-height:120px;overflow:hidden;">
+          ${desc}
+        </div>
+        <a href="${link}" target="_blank"
+           style="display:inline-block;margin-top:10px;font-size:13px;color:#2563eb;text-decoration:none;">
+          🔗 Gönderiyi Gör
+        </a>
+      `;
       wrapper.appendChild(card);
     });
 
@@ -125,6 +122,7 @@ window.addEventListener("DOMContentLoaded", async function() {
   }
 });
 </script>
+
 
 </body>
 </html>
