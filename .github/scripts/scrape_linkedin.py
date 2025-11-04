@@ -11,8 +11,20 @@ os.makedirs("index", exist_ok=True)
 
 print("🌐 RSSHub'tan LinkedIn gönderileri alınıyor...")
 
+def normalize_link(link):
+    """RSSHub bazen tr.linkedin.com veya kısmi link döndürüyor — düzeltelim"""
+    if not link:
+        return ""
+    link = link.strip()
+    link = link.replace("tr.linkedin.com", "www.linkedin.com")
+    link = link.replace("linkedin.com/company/", "www.linkedin.com/company/")
+    # Eğer 'activity-' veya 'feed/update' içermiyorsa, gönderi linki eksiktir
+    if not ("activity-" in link or "feed/update" in link):
+        # fallback: sadece şirket sayfasına yönlendir
+        return "https://www.linkedin.com/company/yamas-ya%C5%9Far-makina-ltd-%C5%9Fti-/posts/"
+    return link
+
 def fetch_rss():
-    """RSSHub'tan XML çekme işlemi (3 deneme, her biri 90 saniye timeout)"""
     for attempt in range(3):
         try:
             start = time.time()
@@ -37,7 +49,7 @@ try:
     for item in items[:6]:
         title = item.findtext("title", "").strip()
         desc = re.sub(r"<.*?>", "", item.findtext("description", "").strip())
-        link = item.findtext("link", "").strip()
+        link = normalize_link(item.findtext("link", "").strip())
         pub = item.findtext("pubDate", "").strip()
 
         text = desc or title
@@ -51,29 +63,19 @@ try:
         })
 
     if not posts:
-        print("⚠️ RSSHub boş döndü, eski veriyi koruyorum.")
         raise Exception("RSSHub boş yanıt verdi.")
-
-    # 🔹 Son güncelleme zamanını ekle
-    posts.insert(0, {
-        "date": time.strftime("%Y-%m-%d %H:%M:%S"),
-        "text": "🔄 Son güncelleme bilgisi",
-        "link": "",
-        "image": ""
     })
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(posts, f, ensure_ascii=False, indent=2)
 
-    print(f"✅ {len(posts)-1} gönderi kaydedildi (toplam {len(posts)} kayıt, 1'i meta bilgi).")
+    print(f"✅ {len(posts)-1} gönderi kaydedildi (toplam {len(posts)} kayıt).")
 
 except Exception as e:
     print(f"🚫 Hata: {e}")
-    # Eğer eski social.json varsa, onu koru
     if os.path.exists(OUTPUT_FILE):
-        print("📦 Eski social.json korunuyor (üzerine yazılmadı).")
+        print("📦 Eski social.json korunuyor.")
     else:
-        print("⚠️ Eski dosya yok, hata kaydediliyor.")
         with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
             json.dump([{
                 "date": "",
