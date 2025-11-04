@@ -12,16 +12,21 @@ os.makedirs("index", exist_ok=True)
 print("🌐 RSSHub'tan LinkedIn gönderileri alınıyor...")
 
 def fetch_rss():
-    """RSSHub'tan XML çekme işlemi (retry dahil)"""
+    """RSSHub'tan XML çekme işlemi (3 deneme, her biri 90 saniye timeout)"""
     for attempt in range(3):
         try:
-            r = requests.get(RSS_URL, timeout=20)
+            start = time.time()
+            r = requests.get(RSS_URL, timeout=90)
             r.raise_for_status()
+            elapsed = round(time.time() - start, 1)
+            print(f"✅ RSSHub bağlantısı başarılı ({elapsed} sn)")
             return r.text
         except Exception as e:
             print(f"⚠️ Deneme {attempt+1}/3 başarısız: {e}")
-            time.sleep(5)
-    raise Exception("RSSHub 3 denemede de yanıt vermedi.")
+            if attempt < 2:
+                print("⏳ 8 saniye sonra yeniden denenecek...")
+                time.sleep(8)
+    raise Exception("RSSHub 3 denemede de yanıt vermedi (timeout veya erişim hatası).")
 
 try:
     xml_text = fetch_rss()
@@ -49,10 +54,18 @@ try:
         print("⚠️ RSSHub boş döndü, eski veriyi koruyorum.")
         raise Exception("RSSHub boş yanıt verdi.")
 
+    # 🔹 Son güncelleme zamanını ekle
+    posts.insert(0, {
+        "date": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "text": "🔄 Son güncelleme bilgisi",
+        "link": "",
+        "image": ""
+    })
+
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(posts, f, ensure_ascii=False, indent=2)
 
-    print(f"✅ {len(posts)} gönderi kaydedildi.")
+    print(f"✅ {len(posts)-1} gönderi kaydedildi (toplam {len(posts)} kayıt, 1'i meta bilgi).")
 
 except Exception as e:
     print(f"🚫 Hata: {e}")
