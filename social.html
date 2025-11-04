@@ -9,10 +9,10 @@
   body { margin:0; background:#f9fafc; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:#222; }
   header { text-align:center; background:var(--yamas); color:#fff; padding:14px 8px; font-weight:600; letter-spacing:.3px; }
   .wrap { max-width:1100px; margin:14px auto 8px; padding:0 12px; }
-  .rail { position:relative; display:flex; align-items:center; gap:10px; }
   .carousel {
-    flex:1; display:flex; gap:14px; overflow-x:auto; scroll-behavior:smooth; padding:12px;
-    scrollbar-width:thin; background:#fff; border:1px solid #e5e7eb; border-radius:10px;
+    display:flex; gap:14px; overflow-x:auto; scroll-behavior:smooth;
+    padding:12px; scrollbar-width:thin; background:#fff;
+    border:1px solid #e5e7eb; border-radius:10px;
   }
   .carousel::-webkit-scrollbar { height:6px; }
   .carousel::-webkit-scrollbar-thumb { background:var(--yamas); border-radius:6px; }
@@ -24,25 +24,17 @@
   .card p { font-size:.95rem; color:#333; line-height:1.4; margin:0 0 8px; }
   .card small { display:block; color:#777; font-size:.8rem; }
   .card a { display:inline-block; margin-top:8px; color:var(--yamas); font-weight:600; text-decoration:none; }
-  .btn {
-    flex:0 0 auto; width:40px; height:40px; border-radius:10px; border:1px solid #e5e7eb; background:#fff;
-    display:grid; place-items:center; cursor:pointer; transition:.15s; user-select:none;
-  }
-  .btn:hover { border-color:var(--yamas); box-shadow:0 2px 8px rgba(30,58,138,.15); }
-  .btn:active { transform:scale(.98); }
   footer { text-align:center; padding:10px; color:#888; font-size:.85rem; }
+  #lastUpdate { text-align:center; font-size:0.9rem; color:#555; margin-bottom:10px; }
 </style>
 </head>
 <body>
   <header>YAMAS • LinkedIn Sosyal Duvar</header>
 
   <div class="wrap">
-    <div class="rail">
-      <button class="btn" id="prev" aria-label="Geri">‹</button>
-      <div id="carousel" class="carousel">
-        <p style="color:#777;margin:auto;">Yükleniyor...</p>
-      </div>
-      <button class="btn" id="next" aria-label="İleri">›</button>
+    <div id="lastUpdate">⏳ Yükleniyor...</div>
+    <div id="carousel" class="carousel">
+      <p style="color:#777;margin:auto;">Yükleniyor...</p>
     </div>
   </div>
 
@@ -51,80 +43,62 @@
 <script>
 window.addEventListener("DOMContentLoaded", async function() {
   const container = document.getElementById("carousel");
-  if (!container) return;
+  const lastUpdate = document.getElementById("lastUpdate");
 
   try {
-    // 🔹 JSON doğrudan GitHub'dan alınır (cache devre dışı)
     const response = await fetch(
       "https://raw.githubusercontent.com/YamasMakina/index/main/index/social.json?nocache=" + Date.now(),
       { cache: "no-store" }
     );
-
     if (!response.ok) throw new Error("Sosyal veri yüklenemedi.");
     const posts = await response.json();
 
-    // 🔹 Geçersiz veya hatalı kayıtları filtrele
-    const validPosts = posts.filter(p =>
-      p.text && !p.text.toLowerCase().includes("hata") &&
-      p.link && !p.link.includes("rsshub.app")
-    );
-
-    if (!validPosts || validPosts.length === 0) {
+    if (!posts || posts.length === 0) {
       container.innerHTML = `
         <div style="padding:20px;text-align:center;color:#555;border:1px solid #ddd;border-radius:8px;background:#f9fafb;">
           🔄 LinkedIn gönderileri şu anda güncelleniyor.<br>Lütfen birkaç dakika sonra tekrar deneyin 💫
-        </div>
-      `;
+        </div>`;
+      lastUpdate.textContent = "Son güncelleme bilgisi alınamadı.";
       return;
     }
 
-    // 🔹 Eski içerikleri temizle
+    // 🔹 ilk kayıt meta bilgi ise al
+    let lastDate = "";
+    if (posts[0].text.includes("Son güncelleme")) {
+      lastDate = posts[0].date;
+      posts.shift(); // meta kaydı listeden çıkar
+    }
+    lastUpdate.textContent = lastDate ? `🕒 Son Güncelleme: ${lastDate}` : "";
+
     container.innerHTML = "";
 
-    // 🔹 Gönderileri oluştur (yatay kaydırmalı)
-    const wrapper = document.createElement("div");
-    wrapper.style.cssText = `
-      display:flex;overflow-x:auto;gap:16px;padding:10px;
-      scroll-snap-type:x mandatory;scroll-behavior:smooth;
-    `;
-
-    validPosts.slice(0, 10).forEach((p) => {
-      const title = p.title || p.text?.slice(0, 80) || "Başlıksız Gönderi";
-      const desc = (p.description || p.text || "").replace(/<\/?[^>]+(>|$)/g, "").slice(0, 250);
+    posts.slice(0, 10).forEach((p) => {
+      const title = p.title || "";
+      const desc = p.text || "";
       const link = p.link || "#";
 
       const card = document.createElement("div");
       card.className = "card";
       card.innerHTML = `
-        <div style="font-weight:600;color:#1e3a8a;margin-bottom:8px;">${title}</div>
+        <div style="font-weight:600;color:#1e3a8a;margin-bottom:8px;">${title || "LinkedIn Gönderisi"}</div>
         <div style="font-size:14px;color:#333;line-height:1.35;max-height:120px;overflow:hidden;">
-          ${desc}...
+          ${desc}
         </div>
         <a href="${link}" target="_blank"
            style="display:inline-block;margin-top:10px;font-size:13px;color:#2563eb;text-decoration:none;">
           🔗 Gönderiyi Gör
-        </a>
-      `;
-      wrapper.appendChild(card);
+        </a>`;
+      container.appendChild(card);
     });
-
-    container.appendChild(wrapper);
-
-    // 🔹 Scroll butonları
-    document.getElementById("prev").onclick = () => { container.scrollBy({ left: -350, behavior: "smooth" }); };
-    document.getElementById("next").onclick = () => { container.scrollBy({ left: 350, behavior: "smooth" }); };
 
   } catch (err) {
     console.error("LinkedIn RSS hatası:", err);
     container.innerHTML = `
       <div style="padding:20px;text-align:center;color:#555;border:1px solid #ddd;border-radius:8px;background:#f9fafb;">
         ⚠️ LinkedIn gönderileri şu anda yüklenemiyor.<br>Lütfen daha sonra tekrar deneyin 💫
-      </div>
-    `;
+      </div>`;
+    lastUpdate.textContent = "Bağlantı hatası — son güncelleme alınamadı.";
   }
-
-  // yıl
-  document.getElementById("yil").textContent = new Date().getFullYear();
 });
 </script>
 
