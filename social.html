@@ -25,14 +25,12 @@
   .card small { display:block; color:#777; font-size:.8rem; }
   .card a { display:inline-block; margin-top:8px; color:var(--yamas); font-weight:600; text-decoration:none; }
   footer { text-align:center; padding:10px; color:#888; font-size:.85rem; }
-  #lastUpdate { text-align:center; font-size:0.9rem; color:#555; margin-bottom:10px; }
 </style>
 </head>
 <body>
   <header>YAMAS • LinkedIn Sosyal Duvar</header>
 
   <div class="wrap">
-    <div id="lastUpdate">⏳ Yükleniyor...</div>
     <div id="carousel" class="carousel">
       <p style="color:#777;margin:auto;">Yükleniyor...</p>
     </div>
@@ -43,7 +41,6 @@
 <script>
 window.addEventListener("DOMContentLoaded", async function() {
   const container = document.getElementById("carousel");
-  const lastUpdate = document.getElementById("lastUpdate");
 
   try {
     const response = await fetch(
@@ -58,17 +55,13 @@ window.addEventListener("DOMContentLoaded", async function() {
         <div style="padding:20px;text-align:center;color:#555;border:1px solid #ddd;border-radius:8px;background:#f9fafb;">
           🔄 LinkedIn gönderileri şu anda güncelleniyor.<br>Lütfen birkaç dakika sonra tekrar deneyin 💫
         </div>`;
-      lastUpdate.textContent = "Son güncelleme bilgisi alınamadı.";
       return;
     }
 
-    // 🔹 ilk kayıt meta bilgi ise al
-    let lastDate = "";
-    if (posts[0].text.includes("Son güncelleme")) {
-      lastDate = posts[0].date;
-      posts.shift(); // meta kaydı listeden çıkar
+    // İlk kayıt meta bilgi (son güncelleme) ise atla
+    if (posts[0].text && posts[0].text.includes("Son güncelleme")) {
+      posts.shift();
     }
-    lastUpdate.textContent = lastDate ? `🕒 Son Güncelleme: ${lastDate}` : "";
 
     container.innerHTML = "";
 
@@ -97,7 +90,6 @@ window.addEventListener("DOMContentLoaded", async function() {
       <div style="padding:20px;text-align:center;color:#555;border:1px solid #ddd;border-radius:8px;background:#f9fafb;">
         ⚠️ LinkedIn gönderileri şu anda yüklenemiyor.<br>Lütfen daha sonra tekrar deneyin 💫
       </div>`;
-    lastUpdate.textContent = "Bağlantı hatası — son güncelleme alınamadı.";
   }
 });
 </script>
