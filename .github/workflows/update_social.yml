@@ -1,36 +1,26 @@
-# .github/scripts/scrape_linkedin.py
-import json, os, requests, feedparser, datetime, hashlib
+name: Update LinkedIn Social Feed
+on:
+  schedule:
+    - cron: "0 7 * * *"
+  workflow_dispatch:
 
-RSS_URL = "https://rsshub.app/linkedin/company/yamas-yaşar-makina-ltd-şti-"   # ← kendi hesabınız
-OUT_FILE = "index/social.json"                                    # html’de okuduğunuz yol
-TIMEOUT = 15
+permissions:
+  contents: write
 
-def main():
-    feed = feedparser.parse(RSS_URL, agent="YAMAS-bot/1.0")
-    if feed.bozo:
-        print("RSS bozo hatası:", feed.bozo_exception)
-        return
-
-    entries = []
-    for e in feed.entries[:10]:
-        entries.append({
-            "title": e.title,
-            "text": e.summary,
-            "link": e.link
-        })
-
-    # Meta kaydı (son güncelleme) ekle – html ilk satırı atlıyor
-    entries.insert(0, {
-        "title": "Meta",
-        "text": f"Son güncelleme: {datetime.datetime.utcnow().isoformat()}Z",
-        "link": ""
-    })
-
-    os.makedirs(os.path.dirname(OUT_FILE), exist_ok=True)
-    with open(OUT_FILE, "w", encoding="utf-8") as f:
-        json.dump(entries, f, ensure_ascii=False, indent=2)
-
-    print(f"{len(entries)-1} gönderi yazıldı.")
-
-if __name__ == "__main__":
-    main()
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+      - name: Install dependencies
+        run: |
+          pip install requests feedparser
+      - name: Run RSSHub scraper
+        run: python .github/scripts/scrape_linkedin.py
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto-update LinkedIn social feed (RSSHub)"
