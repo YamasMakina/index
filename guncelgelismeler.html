@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YAMAS • AR-GE Güncel Gelişmeler</title>
+<style>
+  /* Genel stil */
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background: #f8f9fa;
+    color: #222;
+  }
+  header {
+    background: #1e3a8a;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  main {
+    max-width: 920px;
+    margin: 30px auto 70px;
+    padding: 0 16px;
+  }
+  h2 {
+    text-align: center;
+    color: #1e3a8a;
+    margin-bottom: 18px;
+  }
+  p.subtitle {
+    text-align: center;
+    color: #555;
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+  }
+
+  /* Slider alanı */
+  .slider-wrapper {
+    position: relative;
+    max-width: 920px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  }
+
+  /* 16:9 oranına yakın ve 560px üst sınır */
+  .slider-inner {
+    position: relative;
+    width: 100%;
+    height: clamp(320px, 56vw, 560px);
+  }
+
+  .slider-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.4s ease-in-out;
+  }
+
+  .slide {
+    min-width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Kartın tamamı tıklanabilir olsun diye <a> kullanıyoruz */
+  .slide a {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    text-decoration: none;
+    color: inherit;
+    padding: 10px 14px 14px;
+    box-sizing: border-box;
+  }
+
+  .slide-image-wrapper {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #f1f1f1;
+  }
+
+  .slide-image-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .slide-text {
+    margin-top: 10px;
+  }
+
+  .slide-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e3a8a;
+    margin-bottom: 4px;
+  }
+
+  .slide-desc {
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.35;
+  }
+
+  /* Ok butonları */
+  .slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: rgba(255,255,255,0.9);
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #1e3a8a;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .slider-btn:hover {
+    background: #e5ecff;
+    transform: translateY(-50%) scale(1.03);
+  }
+  .slider-btn:active {
+    transform: translateY(-50%) scale(0.97);
+  }
+  .slider-btn.prev {
+    left: 10px;
+  }
+  .slider-btn.next {
+    right: 10px;
+  }
+
+  /* Dot (slider göstergeleri) */
+  .slider-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 0 12px;
+    background: #fff;
+  }
+
+  .slider-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #d0d7e2;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s, width 0.2s;
+  }
+
+  .slider-dot.active {
+    background: #1e3a8a;
+    width: 18px;
+    transform: scale(1.05);
+  }
+
+  footer {
+    text-align: center;
+    color: #777;
+    font-size: 0.9rem;
+    padding: 24px 12px;
+    border-top: 1px solid #ddd;
+    margin-top: 36px;
+  }
+
+  /* Küçük ekran uyumu */
+  @media (max-width: 600px) {
+    header {
+      font-size: 1.25rem;
+      padding: 14px 0;
+    }
+    .slide a {
+      padding: 8px 10px 12px;
+    }
+    .slide-title {
+      font-size: 0.98rem;
+    }
+    .slide-desc {
+      font-size: 0.86rem;
+    }
+    .slider-btn {
+      width: 30px;
+      height: 30px;
+      font-size: 1.1rem;
+    }
+  }
+</style>
+</head>
+
+<body>
+  <header>
+    🚀 Güncel Gelişmeler
+  </header>
+
+  <main>
+    <h2>Güncel Projeler • Poster & Sunumlar</h2>
+    <p class="subtitle">
+      Aşağıdaki görseller, AR-GE projelerimizin güncel poster ve sunum kapaklarıdır.
+      Görsele tıklayarak ilgili sunumu PPTX formatında açabilirsiniz.
+    </p>
+
+    <!-- SLIDER BAŞLANGIÇ -->
+    <section class="slider-wrapper" aria-label="AR-GE Güncel Gelişmeler Slider">
+      <div class="slider-inner">
+        <div class="slider-track" id="sliderTrack">
+
+          <!-- SLIDE 1 -->
+          <div class="slide">
+            <a href="https://yamasmakina.github.io/index/USIMP-1.pptx" target="_blank" rel="noopener">
+              <div class="slide-image-wrapper">
+                <!-- Poster ilk sayfa görseli -->
+                <img src="./USIMP-1.png" alt="YAMAS-AI Süspansiyon Burç Optimizasyonu">
+              </div>
+              <div class="slide-text">
+                <div class="slide-title">ELEKTRİKLİ ARAÇLARDA YÜKSEK FREKANSLI TİTREŞİM İZOLASYONU İÇİN KAUÇUK BURÇLARIN SAYISAL VE DENEYSEL ANALİZİ</div>
+                <div class="slide-desc">
+                  Yazar: Semih Koçak 
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- SLIDE 2 -->
+          <div class="slide">
+            <a href="https://yamasmakina.github.io/index/USIMP-2.pptx" target="_blank" rel="noopener">
+              <div class="slide-image-wrapper">
+                <img src="./USIMP-2.png" alt="YAMAS RPA2000 Reometre Dijitalizasyonu">
+              </div>
+              <div class="slide-text">
+                <div class="slide-title">SERVO MOTOR KONTROLLÜ STATİK VE ÖMÜR PERFORMANSI TEST CİHAZI GELİŞTİRİLMESİ</div>
+                <div class="slide-desc">
+                  Yazar: Ali Kamil Serbest, Sinan Gazi
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- SLIDE 3 -->
+          <div class="slide">
+            <a href="https://yamasmakina.github.io/index/USIMP-3.pptx" target="_blank" rel="noopener">
+              <div class="slide-image-wrapper">
+                <img src="./USIMP-3.png" alt="Paperwork & IFS • Dijital İş Akışları">
+              </div>
+              <div class="slide-text">
+                <div class="slide-title">ELASTOMER ESASLI TİTREŞİM SÖNÜMLEYİCİ BURÇLARDA SONLU ELEMANLAR ANALİZİ İLE ÖMÜR PERFORMANSI TAHMİNİ </div>
+                <div class="slide-desc">
+                  Yazar: Mustafa Emre Darı
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- İstediğin kadar slide ekleyebilirsin
+               Tek yapman gereken yukarıdaki <div class="slide"> bloğunu çoğaltmak.
+               PPTX linkini ve görsel yolunu (src) değiştirmek yeterli. -->
+
+        </div>
+
+        <!-- Önceki / Sonraki butonlar -->
+        <button class="slider-btn prev" id="prevBtn" aria-label="Önceki">
+          ‹
+        </button>
+        <button class="slider-btn next" id="nextBtn" aria-label="Sonraki">
+          ›
+        </button>
+      </div>
+
+      <!-- Dots (slide sayfa göstergeleri) -->
+      <div class="slider-dots" id="sliderDots"></div>
+    </section>
+    <!-- SLIDER BİTİŞ -->
+  </main>
+
+  <footer>
+    © <span id="yil"></span> YAMAS • AR-GE Departmanı
+  </footer>
+
+  <script>
+    // Yıl
+    document.getElementById("yil").textContent = new Date().getFullYear();
+
+    // Slider JS
+    const track = document.getElementById('sliderTrack');
+    const slides = Array.from(track.children);
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const dotsContainer = document.getElementById('sliderDots');
+
+    let currentIndex = 0;
+
+    // Dotları oluştur
+    slides.forEach((_, index) => {
+      const dot = document.createElement('button');
+      dot.classList.add('slider-dot');
+      if (index === 0) dot.classList.add('active');
+      dot.setAttribute('aria-label', (index + 1) + '. slayta git');
+      dot.addEventListener('click', () => goToSlide(index));
+      dotsContainer.appendChild(dot);
+    });
+
+    const dots = Array.from(dotsContainer.children);
+
+    function updateSlider() {
+      const offset = -currentIndex * 100;
+      track.style.transform = 'translateX(' + offset + '%)';
+
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentIndex);
+      });
+    }
+
+    function goToSlide(index) {
+      if (index < 0) index = slides.length - 1;
+      if (index >= slides.length) index = 0;
+      currentIndex = index;
+      updateSlider();
+    }
+
+    prevBtn.addEventListener('click', () => {
+      goToSlide(currentIndex - 1);
+    });
+
+    nextBtn.addEventListener('click', () => {
+      goToSlide(currentIndex + 1);
+    });
+
+    // Klavye ile gezinme (sol/sağ ok)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        goToSlide(currentIndex - 1);
+      } else if (e.key === 'ArrowRight') {
+        goToSlide(currentIndex + 1);
+      }
+    });
+  </script>
+</body>
+</html>
