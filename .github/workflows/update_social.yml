@@ -1,26 +1,50 @@
 name: Update LinkedIn Social Feed
+
 on:
   schedule:
-    - cron: "0 7 * * *"
+    - cron: "12 */6 * * *"   # 6 saatte bir (RSSHub yoğunluğu için nazik aralık)
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: write   # <-- push için şart
+  actions: read
 
 jobs:
-  update:
+  scrape:
     runs-on: ubuntu-latest
+    timeout-minutes: 8
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          python-version: "3.x"
-      - name: Install dependencies
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
         run: |
+          python -m pip install --upgrade pip
           pip install requests feedparser
-      - name: Run RSSHub scraper
-        run: python .github/scripts/scrape_linkedin.py
-      - uses: stefanzweifel/git-auto-commit-action@v5
+
+      - name: Scrape LinkedIn via RSSHub (resilient)
+        env:
+          RSS_URL: "https://rsshub.app/linkedin/company/yamas-ya%C5%9Far-makina-ltd-%C5%9Fti-/posts"
+          OUTPUT_PATH: "index/social.json"
+        run: |
+          python .github/scripts/scrape_linkedin.py
+        continue-on-error: false
+
+      - name: Show resulting JSON (debug)
+        run: |
+          echo "---- social.json ----"
+          test -f index/social.json && head -c 2000 index/social.json || echo "social.json yok!"
+
+      - name: Commit & Push if changed
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Auto-update LinkedIn social feed (RSSHub)"
+          commit_message: "Auto-update LinkedIn social feed"
+          file_pattern: index/social.json
