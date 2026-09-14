@@ -329,10 +329,10 @@
     "Çorba_Kcal": 250,
     "AnaYemek": "Pideli Köfte",
     "AnaYemek_Kcal": 920,
-    "YanYemek": "Gazlı İçecek",
-    "YanYemek_Kcal": 56,
-    "Tatlıİçecek": "Fincan Kadayıf / Yoğurt",
-    "Tatlıİçecek_Kcal": 290,
+    "YanYemek": "Fincan Kadayıf",
+    "YanYemek_Kcal": 208,
+    "Tatlıİçecek": "Gazlı İçecek / Yoğurt",
+    "Tatlıİçecek_Kcal": 138,
     "Toplam_Kcal": 1516
   },
   {
